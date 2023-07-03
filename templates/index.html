@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Recipe Generator</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/css/bootstrap-slider.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/11.0.2/bootstrap-slider.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h1>Recipe Generator</h1>
+        <form id="recipe-form" method="post" action="/generate_recipe">
+            <div class="form-group">
+                <label for="ingredients">1. What ingredients do you have?</label>
+                <select class="form-control" name="ingredients[]" multiple>
+                    {% for ingredient in ingredients %}
+                    <option value="{{ ingredient }}">{{ ingredient }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-text text-muted">Hold down the Ctrl (Windows) / Command (Mac) button to select
+                    multiple options.</small>
+                <div class="input-group mt-2">
+                    <input type="text" class="form-control" id="new-ingredient"
+                        placeholder="Type any ingredients to add">
+                    <div class="input-group-append">
+                        <button type="button" class="btn btn-primary" id="add-ingredient">Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="tools">2. What kitchen tools do you have?</label>
+                <select class="form-control" name="tools[]" multiple>
+                    {% for tool in kitchen_tools %}
+                    <option value="{{ tool }}">{{ tool }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-text text-muted">Hold down the Ctrl (Windows) / Command (Mac) button to select
+                    multiple options.</small>
+            </div>
+
+            <div class="form-group">
+                <label for="time">3. How much time do you have?</label>
+                <input id="time-slider" type="text" data-slider-min="5" data-slider-max="120" data-slider-step="1"
+                    data-slider-value="30" name="time">
+            </div>
+
+            <div class="form-group">
+                <label for="chef_mode">4. Are you a good chef?</label>
+                <select class="form-control" name="chef_mode">
+                    <option value="Novice">Novice</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Expert">Expert</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="chef_mode">5. Select the desired Chef Mode</label>
+                <select class="form-control" name="chef_mode">
+                    {% for mode in chef_modes %}
+                    <option value="{{ mode }}">{{ mode }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Generate Recipe</button>
+        </form>
+
+        <div id="recipe-output" class="mt-4"></div>
+
+        <script>
+            $(document).ready(function () {
+                // Initialize the time slider
+                $('#time-slider').slider();
+
+                $('#recipe-form').submit(function (e) {
+                    e.preventDefault();
+                    $.ajax({
+                        type: 'POST',
+                        url: '/generate_recipe',
+                        data: $(this).serialize(),
+                        success: function (response) {
+                            $('#recipe-output').text(response.recipe);
+                        }
+                    });
+                });
+
+                $('#add-ingredient').click(function () {
+                    var newIngredient = $('#new-ingredient').val();
+                    if (newIngredient !== '') {
+                        $('select[name="ingredients[]"]').append('<option value="' + newIngredient + '">' + newIngredient + '</option>');
+                        $('#new-ingredient').val('');
+                    }
+                });
+            });
+        </script>
+    </div>
+</body>
+
+</html>
