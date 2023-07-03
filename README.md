@@ -2,6 +2,8 @@
 
 The Recipe Generator is a web application that generates recipes based on user inputs. It utilizes the GPT-2 or openapi language model to generate creative and unique recipes tailored to the user's preferences.
 
+![how it will looks after running](home.png)
+
 ## Installation
 
 1. Clone or fork and then clone the repository:
